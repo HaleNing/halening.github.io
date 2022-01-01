@@ -1,1 +1,41 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en"><title type="text">下木coding~</title><subtitle type="html">MemE is a powerful and highly customizable GoHugo theme for personal blogs.</subtitle><updated>2021-12-31T15:17:05+00:00</updated><id>https://example.com/</id><link rel="alternate" type="text/html" href="https://example.com/"/><link rel="self" type="application/atom+xml" href="https://example.com/atom.xml"/><author><name>underwood</name><uri>https://example.com/</uri><email>xining_l_se@163.com</email></author><rights>[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en)</rights><generator uri="https://gohugo.io/" version="0.91.2">Hugo</generator><entry><title type="text">New Post</title><link rel="alternate" type="text/html" href="https://example.com/posts/new-post/"/><id>https://example.com/posts/new-post/</id><updated>2021-12-31T15:17:02+00:00</updated><published>2021-12-31T22:19:49+08:00</published><author><name>underwood</name><uri>https://github.com/HaleNing</uri><email>xining_l_se@163.com</email></author><rights>[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en)</rights><summary type="html"/><content type="html"/></entry><entry><title type="text">Hello World</title><link rel="alternate" type="text/html" href="https://example.com/posts/hello-world/"/><id>https://example.com/posts/hello-world/</id><updated>2021-12-31T15:17:02+00:00</updated><published>2021-12-31T22:12:32+08:00</published><author><name>underwood</name><uri>https://github.com/HaleNing</uri><email>xining_l_se@163.com</email></author><rights>[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en)</rights><summary type="html"/><content type="html"/></entry></feed>
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en"><title type="text">下木coding~</title><subtitle type="html">MemE is a powerful and highly customizable GoHugo theme for personal blogs.</subtitle><updated>2022-01-01T01:48:24+00:00</updated><id>https://example.com/</id><link rel="alternate" type="text/html" href="https://example.com/"/><link rel="self" type="application/atom+xml" href="https://example.com/atom.xml"/><author><name>underwood</name><uri>https://example.com/</uri><email>xining_l_se@163.com</email></author><rights>[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en)</rights><generator uri="https://gohugo.io/" version="0.91.2">Hugo</generator><entry><title type="text">2021年度总结</title><link rel="alternate" type="text/html" href="https://example.com/posts/2021%E5%B9%B4%E5%BA%A6%E6%80%BB%E7%BB%93/"/><id>https://example.com/posts/2021%E5%B9%B4%E5%BA%A6%E6%80%BB%E7%BB%93/</id><updated>2022-01-01T01:48:22+00:00</updated><published>2022-01-01T08:48:10+08:00</published><author><name>underwood</name><uri>https://github.com/HaleNing</uri><email>xining_l_se@163.com</email></author><rights>[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en)</rights><summary type="html">序言 回首2021,对我来说,这既是充满希望的一年,也是失落慢慢的一年.下面就对我这2021一年的生活做一个总结,同时展望2022.
+回首2021 2021年特殊之处在于,在2021年,我正式踏入了社会,摆脱了学生身份,现在转转公司工作,如果你没听说过转转的话,你应该听说过阿里的闲鱼,转转和闲鱼类似,针对的市场也是二手市场.而在这一年,职场生活给我的体验是明显不同于学生时代的.
+在职场中,一个关键词就是产出,我们作为员工的产出率是不是让上级满意,很大程度上决定了你的升职加薪等等,幸运的是,我在入职转转的时候,加入一个在我现在看来十分适合我的小组,据后来听大领导说,当时校招生分配小组时,80%是考虑小组是否缺人,20%是考虑个人能力是否符合. 因此我最终加入了现在的小组,果然在工作1月后,就有小组内的一位同事离职了.
+不扯远了,那下面就总结一下2021的结果.
+成功融入团队 开始认真考虑理财,跑赢通货膨胀 开始锻炼,开始减肥 做一个自律的人 读5本技术书籍,1.5/5 输出读书笔记 开始学习Go 2021自省 在2021年我最大的问题就是不够自律, 空闲的时间或可以运动或可以学习来提高自己,但却白白浪费在了娱乐上,沉迷在无聊的事情中,回顾过去的时候,却又深深厌恶,却又一次次的再次沉迷. 这个问题需要重视,重视身心健康 而不应该隐藏在黑暗的角落中.
+展望2022 在2022年,排在首位的问题就是提高自律,抛弃无聊的娱乐,时代变化的太快了,如果不断沉迷在低级娱乐中,当抬头的时候才发现已经远远落后于其他人, 因此2022年的计划如下(以下的学会指的是熟悉,而不是精通):
+阅读5本技术书籍 0/5 学会并能够使用React 学会Go 接触开源项目(Go相关),尝试第一次PR做出贡献 继续锻炼,目标减重5公斤 自律,重视身心健康 将后续的技术总结,书籍笔记,生活感悟发到本博客上 接触一下函数编程&amp;ndash;elixir</summary><content type="html">&lt;h2 id="序言">序言&lt;/h2>
+&lt;blockquote>
+&lt;p>回首2021,对我来说,这既是充满希望的一年,也是失落慢慢的一年.下面就对我这2021一年的生活做一个总结,同时展望2022.&lt;/p>
+&lt;/blockquote>
+&lt;h3 id="回首2021">回首2021&lt;/h3>
+&lt;p>2021年特殊之处在于,在2021年,我正式踏入了社会,摆脱了学生身份,现在转转公司工作,如果你没听说过转转的话,你应该听说过阿里的闲鱼,转转和闲鱼类似,针对的市场也是二手市场.而在这一年,职场生活给我的体验是明显不同于学生时代的.&lt;/p>
+&lt;p>在职场中,一个关键词就是产出,我们作为员工的产出率是不是让上级满意,很大程度上决定了你的升职加薪等等,幸运的是,我在入职转转的时候,加入一个在我现在看来十分适合我的小组,据后来听大领导说,当时校招生分配小组时,80%是考虑小组是否缺人,20%是考虑个人能力是否符合. 因此我最终加入了现在的小组,果然在工作1月后,就有小组内的一位同事离职了.&lt;/p>
+&lt;p>不扯远了,那下面就总结一下2021的结果.&lt;/p>
+&lt;ul>
+&lt;li>&lt;input checked="" disabled="" type="checkbox"> 成功融入团队&lt;/li>
+&lt;li>&lt;input checked="" disabled="" type="checkbox"> 开始认真考虑理财,跑赢通货膨胀&lt;/li>
+&lt;li>&lt;input checked="" disabled="" type="checkbox"> 开始锻炼,开始减肥&lt;/li>
+&lt;li>&lt;input disabled="" type="checkbox"> 做一个自律的人&lt;/li>
+&lt;li>&lt;input disabled="" type="checkbox"> 读5本技术书籍,1.5/5&lt;/li>
+&lt;li>&lt;input disabled="" type="checkbox"> 输出读书笔记&lt;/li>
+&lt;li>&lt;input disabled="" type="checkbox"> 开始学习Go&lt;/li>
+&lt;/ul>
+&lt;h3 id="2021自省">2021自省&lt;/h3>
+&lt;blockquote>
+&lt;p>在2021年我最大的问题就是不够自律, 空闲的时间或可以运动或可以学习来提高自己,但却白白浪费在了娱乐上,沉迷在无聊的事情中,回顾过去的时候,却又深深厌恶,却又一次次的再次沉迷. 这个问题需要重视,重视身心健康 而不应该隐藏在黑暗的角落中.&lt;/p>
+&lt;/blockquote>
+&lt;h3 id="展望2022">展望2022&lt;/h3>
+&lt;blockquote>
+&lt;p>在2022年,排在首位的问题就是提高自律,抛弃无聊的娱乐,时代变化的太快了,如果不断沉迷在低级娱乐中,当抬头的时候才发现已经远远落后于其他人, 因此2022年的计划如下(以下的学会指的是熟悉,而不是精通):&lt;/p>
+&lt;/blockquote>
+&lt;ul>
+&lt;li>&lt;input disabled="" type="checkbox"> 阅读5本技术书籍 0/5&lt;/li>
+&lt;li>&lt;input disabled="" type="checkbox"> 学会并能够使用React&lt;/li>
+&lt;li>&lt;input disabled="" type="checkbox"> 学会Go&lt;/li>
+&lt;li>&lt;input disabled="" type="checkbox"> 接触开源项目(Go相关),尝试第一次PR做出贡献&lt;/li>
+&lt;li>&lt;input disabled="" type="checkbox"> 继续锻炼,目标减重5公斤&lt;/li>
+&lt;li>&lt;input disabled="" type="checkbox"> 自律,重视身心健康&lt;/li>
+&lt;li>&lt;input disabled="" type="checkbox"> 将后续的技术总结,书籍笔记,生活感悟发到本博客上&lt;/li>
+&lt;li>&lt;input disabled="" type="checkbox"> 接触一下函数编程&amp;ndash;elixir&lt;/li>
+&lt;/ul></content></entry></feed>
