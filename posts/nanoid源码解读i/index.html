@@ -1,0 +1,198 @@
+<!doctype html><html lang=en><head prefix="og: http://ogp.me/ns# article: http://ogp.me/ns/article#"><meta charset=utf-8><meta name=generator content="Hugo 0.91.2"><meta name=theme-color content="#fff"><meta name=color-scheme content="light dark"><meta name=viewport content="width=device-width,initial-scale=1"><meta name=format-detection content="telephone=no, date=no, address=no, email=no"><meta http-equiv=cache-control content="no-transform"><meta http-equiv=cache-control content="no-siteapp"><title>nanoid源码解读I | 下木coding~</title><link rel=stylesheet href=/css/meme.min.d318d32cd98937219d5a9379843b40935c0d7bc79dd48a2939516e3c756a3ad4.css><script src=https://cdn.jsdelivr.net/npm/lunr@2.3.9/lunr.min.js defer></script><script src=/js/meme.min.a74e28464a7eeed54b4e02aead6360ae76bbd5ee5745afdf0a47319b6541600e.js></script>
+<link rel=preconnect href=https://fonts.gstatic.com crossorigin><link rel=stylesheet href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:ital,wght@0,400;0,500;0,700;1,400;1,700&family=Source+Code+Pro:ital,wght@0,400;0,700;1,400;1,700&family=Comfortaa:wght@700&display=swap" media=print onload="this.media='all'"><noscript><link rel=stylesheet href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:ital,wght@0,400;0,500;0,700;1,400;1,700&family=Source+Code+Pro:ital,wght@0,400;0,700;1,400;1,700&family=Comfortaa:wght@700&display=swap"></noscript><meta name=author content="underwood"><meta name=description content="nanoId是什么？  官方描述：一个小巧、安全、URL友好、唯一的 JavaScript 字符串ID生成器。一般我拿来用于生成唯一id，官方也贴心的提供了一个计算碰撞率的网站，有兴趣可以去看看：地址
+ 抛砖引玉 nanoId现在已经被移植到了20种语言中，这个系列文章将会就作者的JS实现，和Java实现为主要切入点。本篇是解读nano源码的第一篇文章。首先先简单热热身，先看一下项目中的demo是怎么实现的。
+小试牛刀 1 2  import { nanoid } from 'nanoid' model.id = nanoid() //=> &#34;V1StGXR8_Z5jdHi6B-myT&#34;   我们能够看到，这个函数是从nanoid 中引用的。通过vscode的跳转帮助，我们能够看到文件如下所示：
+这个方法接受一个number类型的参数，作为size，返回字符串。
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15  /** * Generate secure URL-friendly unique ID."><link rel="shortcut icon" href=/favicon.ico type=image/x-icon><link rel=mask-icon href=/icons/safari-pinned-tab.svg color=#2a6df4><link rel=apple-touch-icon sizes=180x180 href=/icons/apple-touch-icon.png><meta name=apple-mobile-web-app-capable content="yes"><meta name=apple-mobile-web-app-title content="下木coding~"><meta name=apple-mobile-web-app-status-bar-style content="black"><meta name=mobile-web-app-capable content="yes"><meta name=application-name content="下木coding~"><meta name=msapplication-starturl content="../../"><meta name=msapplication-TileColor content="#fff"><meta name=msapplication-TileImage content="../../icons/mstile-150x150.png"><link rel=manifest href=/manifest.json><link rel=canonical href=https://example.com/posts/nanoid%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BBi/><script type=application/ld+json>{"@context":"https://schema.org","@type":"BlogPosting","datePublished":"2022-02-09T22:45:39+08:00","dateModified":"2022-03-27T14:16:29+00:00","url":"https://example.com/posts/nanoid%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BBi/","headline":"nanoid源码解读I","description":"nanoId是什么？  官方描述：一个小巧、安全、URL友好、唯一的 JavaScript 字符串ID生成器。一般我拿来用于生成唯一id，官方也贴心的提供了一个计算碰撞率的网站，有兴趣可以去看看：地址\n 抛砖引玉 nanoId现在已经被移植到了20种语言中，这个系列文章将会就作者的JS实现，和Java实现为主要切入点。本篇是解读nano源码的第一篇文章。首先先简单热热身，先看一下项目中的demo是怎么实现的。\n小试牛刀 1 2  import { nanoid } from 'nanoid' model.id = nanoid() //=\u003e \"V1StGXR8_Z5jdHi6B-myT\"   我们能够看到，这个函数是从nanoid 中引用的。通过vscode的跳转帮助，我们能够看到文件如下所示：\n这个方法接受一个number类型的参数，作为size，返回字符串。\n1 2 3 4 5 6 7 8 9 10 11 12 13 14 15  /** * Generate secure URL-friendly unique ID.","inLanguage":"en","articleSection":"posts","wordCount":526,"image":"https://example.com/icons/apple-touch-icon.png","author":{"@type":"Person","description":"Viva La Vida","email":"xining_l_se@163.com","image":"https://example.com/icons/apple-touch-icon.png","url":"https://github.com/HaleNing","name":"underwood"},"license":"[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en)","publisher":{"@type":"Organization","name":"下木coding~","logo":{"@type":"ImageObject","url":"https://example.com/icons/apple-touch-icon.png"},"url":"https://example.com/"},"mainEntityOfPage":{"@type":"WebSite","@id":"https://example.com/"}}</script><meta name=twitter:card content="summary"><meta name=twitter:site content="@reuixiy"><meta name=twitter:creator content="@Halening"><meta property="og:title" content="nanoid源码解读I"><meta property="og:description" content="nanoId是什么？  官方描述：一个小巧、安全、URL友好、唯一的 JavaScript 字符串ID生成器。一般我拿来用于生成唯一id，官方也贴心的提供了一个计算碰撞率的网站，有兴趣可以去看看：地址
+ 抛砖引玉 nanoId现在已经被移植到了20种语言中，这个系列文章将会就作者的JS实现，和Java实现为主要切入点。本篇是解读nano源码的第一篇文章。首先先简单热热身，先看一下项目中的demo是怎么实现的。
+小试牛刀 1 2  import { nanoid } from 'nanoid' model.id = nanoid() //=> &#34;V1StGXR8_Z5jdHi6B-myT&#34;   我们能够看到，这个函数是从nanoid 中引用的。通过vscode的跳转帮助，我们能够看到文件如下所示：
+这个方法接受一个number类型的参数，作为size，返回字符串。
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15  /** * Generate secure URL-friendly unique ID."><meta property="og:url" content="https://example.com/posts/nanoid%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BBi/"><meta property="og:site_name" content="下木coding~"><meta property="og:locale" content="en"><meta property="og:image" content="https://example.com/icons/apple-touch-icon.png"><meta property="og:type" content="article"><meta property="article:published_time" content="2022-02-09T22:45:39+08:00"><meta property="article:modified_time" content="2022-03-27T14:16:29+00:00"><meta property="article:section" content="posts"></head><body><div class=container><header class=header><div class=header-wrapper><div class="header-inner single"><div class=site-brand><a href=/ class=brand>下木coding~</a></div><nav class=nav><ul class=menu id=menu><li class="menu-item active"><a href=/posts/><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon archive"><path d="M32 448c0 17.7 14.3 32 32 32h384c17.7.0 32-14.3 32-32V160H32v288zm160-212c0-6.6 5.4-12 12-12h104c6.6.0 12 5.4 12 12v8c0 6.6-5.4 12-12 12H204c-6.6.0-12-5.4-12-12v-8zM480 32H32C14.3 32 0 46.3.0 64v48c0 8.8 7.2 16 16 16h480c8.8.0 16-7.2 16-16V64c0-17.7-14.3-32-32-32z"/></svg><span class=menu-item-name>Posts</span></a></li><li class=menu-item><a href=/categories/><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon th"><path d="M149.333 56v80c0 13.255-10.745 24-24 24H24c-13.255.0-24-10.745-24-24V56c0-13.255 10.745-24 24-24h101.333c13.255.0 24 10.745 24 24zm181.334 240v-80c0-13.255-10.745-24-24-24H205.333c-13.255.0-24 10.745-24 24v80c0 13.255 10.745 24 24 24h101.333c13.256.0 24.001-10.745 24.001-24zm32-240v80c0 13.255 10.745 24 24 24H488c13.255.0 24-10.745 24-24V56c0-13.255-10.745-24-24-24H386.667c-13.255.0-24 10.745-24 24zm-32 80V56c0-13.255-10.745-24-24-24H205.333c-13.255.0-24 10.745-24 24v80c0 13.255 10.745 24 24 24h101.333c13.256.0 24.001-10.745 24.001-24zm-205.334 56H24c-13.255.0-24 10.745-24 24v80c0 13.255 10.745 24 24 24h101.333c13.255.0 24-10.745 24-24v-80c0-13.255-10.745-24-24-24zM0 376v80c0 13.255 10.745 24 24 24h101.333c13.255.0 24-10.745 24-24v-80c0-13.255-10.745-24-24-24H24c-13.255.0-24 10.745-24 24zm386.667-56H488c13.255.0 24-10.745 24-24v-80c0-13.255-10.745-24-24-24H386.667c-13.255.0-24 10.745-24 24v80c0 13.255 10.745 24 24 24zm0 160H488c13.255.0 24-10.745 24-24v-80c0-13.255-10.745-24-24-24H386.667c-13.255.0-24 10.745-24 24v80c0 13.255 10.745 24 24 24zM181.333 376v80c0 13.255 10.745 24 24 24h101.333c13.255.0 24-10.745 24-24v-80c0-13.255-10.745-24-24-24H205.333c-13.255.0-24 10.745-24 24z"/></svg><span class=menu-item-name>Categories</span></a></li><li class=menu-item><a href=/tags/><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512" class="icon tags"><path d="M497.941 225.941 286.059 14.059A48 48 0 00252.118.0H48C21.49.0.0 21.49.0 48v204.118a48 48 0 0014.059 33.941l211.882 211.882c18.744 18.745 49.136 18.746 67.882.0l204.118-204.118c18.745-18.745 18.745-49.137.0-67.882zM112 160c-26.51.0-48-21.49-48-48s21.49-48 48-48 48 21.49 48 48-21.49 48-48 48zm513.941 133.823L421.823 497.941c-18.745 18.745-49.137 18.745-67.882.0l-.36-.36L527.64 323.522c16.999-16.999 26.36-39.6 26.36-63.64s-9.362-46.641-26.36-63.64L331.397.0h48.721a48 48 0 0133.941 14.059l211.882 211.882c18.745 18.745 18.745 49.137.0 67.882z"/></svg><span class=menu-item-name>Tags</span></a></li><li class=menu-item><a href=/about/><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512" class="icon user-circle"><path d="M248 8C111 8 0 119 0 256s111 248 248 248 248-111 248-248S385 8 248 8zm0 96c48.6.0 88 39.4 88 88s-39.4 88-88 88-88-39.4-88-88 39.4-88 88-88zm0 344c-58.7.0-111.3-26.6-146.5-68.2 18.8-35.4 55.6-59.8 98.5-59.8 2.4.0 4.8.4 7.1 1.1 13 4.2 26.6 6.9 40.9 6.9s28-2.7 40.9-6.9c2.3-.7 4.7-1.1 7.1-1.1 42.9.0 79.7 24.4 98.5 59.8C359.3 421.4 306.7 448 248 448z"/></svg><span class=menu-item-name>About</span></a></li><li class=menu-item><a id=theme-switcher href=#><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon theme-icon-light"><path d="M193.2 104.5 242 7a18 18 0 0128 0l48.8 97.5L422.2 70A18 18 0 01442 89.8l-34.5 103.4L505 242a18 18 0 010 28l-97.5 48.8L442 422.2A18 18 0 01422.2 442l-103.4-34.5L270 505a18 18 0 01-28 0l-48.8-97.5L89.8 442A18 18 0 0170 422.2l34.5-103.4-97.5-48.8a18 18 0 010-28l97.5-48.8L70 89.8A18 18 0 0189.8 70zM256 128a128 128 0 10.01.0M256 160a96 96 0 10.01.0"/></svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon theme-icon-dark"><path d="M27 412A256 256 0 10181 5a11.5 11.5.0 00-5 20A201.5 201.5.0 0142 399a11.5 11.5.0 00-15 13"/></svg></a></li><li class="menu-item search-item"><form id=search class=search role=search><label for=search-input><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon search-icon"><path d="M505 442.7 405.3 343c-4.5-4.5-10.6-7-17-7H372c27.6-35.3 44-79.7 44-128C416 93.1 322.9.0 208 0S0 93.1.0 208s93.1 208 208 208c48.3.0 92.7-16.4 128-44v16.3c0 6.4 2.5 12.5 7 17l99.7 99.7c9.4 9.4 24.6 9.4 33.9.0l28.3-28.3c9.4-9.4 9.4-24.6.1-34zM208 336c-70.7.0-128-57.2-128-128 0-70.7 57.2-128 128-128 70.7.0 128 57.2 128 128 0 70.7-57.2 128-128 128z"/></svg></label><input type=search id=search-input class=search-input></form><template id=search-result hidden><article class="content post"><h2 class=post-title><a class=summary-title-link></a></h2><summary class=summary></summary><div class=read-more-container><a class=read-more-link>Read More »</a></div></article></template></li></ul></nav></div></div><input type=checkbox id=nav-toggle aria-hidden=true>
+<label for=nav-toggle class=nav-toggle></label>
+<label for=nav-toggle class=nav-curtain></label></header><main class="main single" id=main><div class=main-inner><article class="content post h-entry" data-small-caps=true data-align=default data-type=posts data-toc-num=true><h1 class="post-title p-name">nanoid源码解读I</h1><div class=post-meta><time datetime=2022-02-09T22:45:39+08:00 class="post-meta-item published dt-published"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="icon post-meta-icon"><path d="M148 288h-40c-6.6.0-12-5.4-12-12v-40c0-6.6 5.4-12 12-12h40c6.6.0 12 5.4 12 12v40c0 6.6-5.4 12-12 12zm108-12v-40c0-6.6-5.4-12-12-12h-40c-6.6.0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6.0 12-5.4 12-12zm96 0v-40c0-6.6-5.4-12-12-12h-40c-6.6.0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6.0 12-5.4 12-12zm-96 96v-40c0-6.6-5.4-12-12-12h-40c-6.6.0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6.0 12-5.4 12-12zm-96 0v-40c0-6.6-5.4-12-12-12h-40c-6.6.0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6.0 12-5.4 12-12zm192 0v-40c0-6.6-5.4-12-12-12h-40c-6.6.0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6.0 12-5.4 12-12zm96-260v352c0 26.5-21.5 48-48 48H48c-26.5.0-48-21.5-48-48V112c0-26.5 21.5-48 48-48h48V12c0-6.6 5.4-12 12-12h40c6.6.0 12 5.4 12 12v52h128V12c0-6.6 5.4-12 12-12h40c6.6.0 12 5.4 12 12v52h48c26.5.0 48 21.5 48 48zm-48 346V160H48v298c0 3.3 2.7 6 6 6h340c3.3.0 6-2.7 6-6z"/></svg>&nbsp;2022.2.9</time>
+<time datetime=2022-03-27T14:16:29+00:00 class="post-meta-item modified dt-updated"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="icon post-meta-icon"><path d="M4e2 64h-48V12c0-6.627-5.373-12-12-12h-40c-6.627.0-12 5.373-12 12v52H160V12c0-6.627-5.373-12-12-12h-40c-6.627.0-12 5.373-12 12v52H48C21.49 64 0 85.49.0 112v352c0 26.51 21.49 48 48 48h352c26.51.0 48-21.49 48-48V112c0-26.51-21.49-48-48-48zm-6 4e2H54a6 6 0 01-6-6V160h352v298a6 6 0 01-6 6zm-52.849-200.65L198.842 404.519c-4.705 4.667-12.303 4.637-16.971-.068l-75.091-75.699c-4.667-4.705-4.637-12.303.068-16.971l22.719-22.536c4.705-4.667 12.303-4.637 16.97.069l44.104 44.461 111.072-110.181c4.705-4.667 12.303-4.637 16.971.068l22.536 22.718c4.667 4.705 4.636 12.303-.069 16.97z"/></svg>&nbsp;2022.3.27</time>
+<span class="post-meta-item wordcount"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon post-meta-icon"><path d="M497.9 142.1l-46.1 46.1c-4.7 4.7-12.3 4.7-17 0l-111-111c-4.7-4.7-4.7-12.3.0-17l46.1-46.1c18.7-18.7 49.1-18.7 67.9.0l60.1 60.1c18.8 18.7 18.8 49.1.0 67.9zM284.2 99.8 21.6 362.4.4 483.9c-2.9 16.4 11.4 30.6 27.8 27.8l121.5-21.3 262.6-262.6c4.7-4.7 4.7-12.3.0-17l-111-111c-4.8-4.7-12.4-4.7-17.1.0zM124.1 339.9c-5.5-5.5-5.5-14.3.0-19.8l154-154c5.5-5.5 14.3-5.5 19.8.0s5.5 14.3.0 19.8l-154 154c-5.5 5.5-14.3 5.5-19.8.0zM88 424h48v36.3l-64.5 11.3-31.1-31.1L51.7 376H88v48z"/></svg>&nbsp;526</span>
+<span class="post-meta-item reading-time"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon post-meta-icon"><path d="M256 8C119 8 8 119 8 256s111 248 248 248 248-111 248-248S393 8 256 8zm0 448c-110.5.0-2e2-89.5-2e2-2e2S145.5 56 256 56s2e2 89.5 2e2 2e2-89.5 2e2-2e2 2e2zm61.8-104.4-84.9-61.7c-3.1-2.3-4.9-5.9-4.9-9.7V116c0-6.6 5.4-12 12-12h32c6.6.0 12 5.4 12 12v141.7l66.8 48.6c5.4 3.9 6.5 11.4 2.6 16.8L334.6 349c-3.9 5.3-11.4 6.5-16.8 2.6z"/></svg>&nbsp;3&nbsp;mins</span></div><div class="post-body e-content"><h2 id=nanoid是什么><a href=#nanoid是什么 class=anchor-link><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96.0-59.27-59.26-59.27-155.7.0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757.0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037.0 01-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482.0 0120.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96.0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454.0 0020.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037.0 00-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639.0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a>nanoId是什么？</h2><blockquote><p style=text-indent:0><span class=drop-cap>官</span>方描述：一个小巧、安全、URL友好、唯一的 JavaScript 字符串ID生成器。一般我拿来用于生成唯一id，官方也贴心的提供了一个计算碰撞率的网站，有兴趣可以去看看：<a href=https://zelark.github.io/nano-id-cc/ target=_blank rel=noopener>地址</a></p></blockquote><h3 id=抛砖引玉><a href=#抛砖引玉 class=anchor-link><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96.0-59.27-59.26-59.27-155.7.0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757.0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037.0 01-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482.0 0120.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96.0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454.0 0020.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037.0 00-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639.0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a>抛砖引玉</h3><p>nanoId现在已经被移植到了20种语言中，这个系列文章将会就作者的JS实现，和Java实现为主要切入点。本篇是解读nano源码的第一篇文章。首先先简单热热身，先看一下项目中的demo是怎么实现的。</p><h3 id=小试牛刀><a href=#小试牛刀 class=anchor-link><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96.0-59.27-59.26-59.27-155.7.0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757.0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037.0 01-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482.0 0120.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96.0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454.0 0020.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037.0 00-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639.0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a>小试牛刀</h3><div class=highlight><div class=chroma><div class=table-container><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-javascript data-lang=javascript><span class=kr>import</span> <span class=p>{</span> <span class=nx>nanoid</span> <span class=p>}</span> <span class=nx>from</span> <span class=s1>&#39;nanoid&#39;</span>
+<span class=nx>model</span><span class=p>.</span><span class=nx>id</span> <span class=o>=</span> <span class=nx>nanoid</span><span class=p>()</span> <span class=c1>//=&gt; &#34;V1StGXR8_Z5jdHi6B-myT&#34;
+</span></code></pre></td></tr></table></div></div></div><p>我们能够看到，这个函数是从<code>nanoid</code> 中引用的。通过vscode的跳转帮助，我们能够看到文件如下所示：</p><p>这个方法接受一个number类型的参数，作为size，返回字符串。</p><div class=highlight><div class=chroma><div class=table-container><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-typescript data-lang=typescript><span class=cm>/**
+</span><span class=cm> * Generate secure URL-friendly unique ID.
+</span><span class=cm> *
+</span><span class=cm> * By default, the ID will have 21 symbols to have a collision probability
+</span><span class=cm> * similar to UUID v4.
+</span><span class=cm> *
+</span><span class=cm> * ```js
+</span><span class=cm> * import { nanoid } from &#39;nanoid&#39;
+</span><span class=cm> * model.id = nanoid() //=&gt; &#34;Uakgb_J5m9g-0JDMbcJqL&#34;
+</span><span class=cm> * ```
+</span><span class=cm> *
+</span><span class=cm> * @param size Size of the ID. The default size is 21.
+</span><span class=cm> * @returns A random string.
+</span><span class=cm> */</span>
+<span class=kr>export</span> <span class=kd>function</span> <span class=nx>nanoid</span><span class=p>(</span><span class=nx>size?</span>: <span class=kt>number</span><span class=p>)</span><span class=o>:</span> <span class=kt>string</span>
+</code></pre></td></tr></table></div></div></div><p><code>-=</code> convert <code>size</code> to number
+这时让我们去源码看一看作者的实现吧。这个方法位于nanoid项目根目录下的<code>index.js</code>文件里的<code>nanoid</code> 方法。</p><div class=highlight><div class=chroma><div class=table-container><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-javascript data-lang=javascript><span class=kr>const</span> <span class=nx>POOL_SIZE_MULTIPLIER</span> <span class=o>=</span> <span class=mi>128</span>
+<span class=kd>let</span> <span class=nx>pool</span><span class=p>,</span> <span class=nx>poolOffset</span>
+
+
+<span class=kd>let</span> <span class=nx>nanoid</span> <span class=o>=</span> <span class=p>(</span><span class=nx>size</span> <span class=o>=</span> <span class=mi>21</span><span class=p>)</span> <span class=p>=&gt;</span> <span class=p>{</span>
+  <span class=c1>// to prevent `valueOf` abusing
+</span><span class=c1></span>  <span class=nx>fillPool</span><span class=p>((</span><span class=nx>size</span> <span class=o>-=</span> <span class=mi>0</span><span class=p>))</span>
+  <span class=kd>let</span> <span class=nx>id</span> <span class=o>=</span> <span class=s1>&#39;&#39;</span>
+  <span class=c1>// We are reading directly from the random pool to avoid creating new array
+</span><span class=c1></span>  <span class=k>for</span> <span class=p>(</span><span class=kd>let</span> <span class=nx>i</span> <span class=o>=</span> <span class=nx>poolOffset</span> <span class=o>-</span> <span class=nx>size</span><span class=p>;</span> <span class=nx>i</span> <span class=o>&lt;</span> <span class=nx>poolOffset</span><span class=p>;</span> <span class=nx>i</span><span class=o>++</span><span class=p>)</span> <span class=p>{</span>
+    <span class=c1>// It is incorrect to use bytes exceeding the alphabet size.
+</span><span class=c1></span>    <span class=c1>// The following mask reduces the random byte in the 0-255 value
+</span><span class=c1></span>    <span class=c1>// range to the 0-63 value range. Therefore, adding hacks, such
+</span><span class=c1></span>    <span class=c1>// as empty string fallback or magic numbers, is unneccessary because
+</span><span class=c1></span>    <span class=c1>// the bitmask trims bytes down to the alphabet size.
+</span><span class=c1></span>    <span class=nx>id</span> <span class=o>+=</span> <span class=nx>urlAlphabet</span><span class=p>[</span><span class=nx>pool</span><span class=p>[</span><span class=nx>i</span><span class=p>]</span> <span class=o>&amp;</span> <span class=mi>63</span><span class=p>]</span>
+  <span class=p>}</span>
+  <span class=k>return</span> <span class=nx>id</span>
+
+
+<span class=kd>let</span> <span class=nx>fillPool</span> <span class=o>=</span> <span class=nx>bytes</span> <span class=p>=&gt;</span> <span class=p>{</span>
+  <span class=k>if</span> <span class=p>(</span><span class=o>!</span><span class=nx>pool</span> <span class=o>||</span> <span class=nx>pool</span><span class=p>.</span><span class=nx>length</span> <span class=o>&lt;</span> <span class=nx>bytes</span><span class=p>)</span> <span class=p>{</span>
+    <span class=nx>pool</span> <span class=o>=</span> <span class=nx>Buffer</span><span class=p>.</span><span class=nx>allocUnsafe</span><span class=p>(</span><span class=nx>bytes</span> <span class=o>*</span> <span class=nx>POOL_SIZE_MULTIPLIER</span><span class=p>)</span>
+    <span class=nx>crypto</span><span class=p>.</span><span class=nx>randomFillSync</span><span class=p>(</span><span class=nx>pool</span><span class=p>)</span>
+    <span class=nx>poolOffset</span> <span class=o>=</span> <span class=mi>0</span>
+  <span class=p>}</span> <span class=k>else</span> <span class=k>if</span> <span class=p>(</span><span class=nx>poolOffset</span> <span class=o>+</span> <span class=nx>bytes</span> <span class=o>&gt;</span> <span class=nx>pool</span><span class=p>.</span><span class=nx>length</span><span class=p>)</span> <span class=p>{</span>
+    <span class=nx>crypto</span><span class=p>.</span><span class=nx>randomFillSync</span><span class=p>(</span><span class=nx>pool</span><span class=p>)</span>
+    <span class=nx>poolOffset</span> <span class=o>=</span> <span class=mi>0</span>
+  <span class=p>}</span>
+  <span class=nx>poolOffset</span> <span class=o>+=</span> <span class=nx>bytes</span>
+<span class=p>}</span>
+<span class=p>}</span>
+
+</code></pre></td></tr></table></div></div></div><blockquote><p>这个方法关联的行数很少，但是作者也别有用心。</p></blockquote><p>首先是为了避免<code>valueOf</code>的消耗，使用<code>-=</code> 运算符将size变量转换成<code> number</code> 类型。
+之后来到了<code>fillPool</code>方法，这里作者进行了判断。</p><p>如果全局变量<code>pool</code> 不存在，或者，已存在的 池子大小比我们传入的<code>size</code> 小。
+那我们就重新创建一个池子。反之就使用已存在的池子，减少一次
+<strong>分配Buffer变量的消耗</strong>。 如果需要创建一个池子，
+之后使用的是Buffer模块提供的<code>allocUnsafe</code> 方法。 这里便利用到了<code>allocUnsafe</code>的一个特性，
+预分配Buffer。原因如下：</p><div class=highlight><div class=chroma><div class=table-container><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-javascript data-lang=javascript><span class=nx>The</span> <span class=nx>Buffer</span> <span class=nx>module</span> <span class=nx>pre</span><span class=o>-</span><span class=nx>allocates</span> <span class=nx>an</span> <span class=nx>internal</span> <span class=nx>Buffer</span> <span class=nx>instance</span> <span class=k>of</span> <span class=nx>size</span> <span class=nx>Buffer</span><span class=p>.</span><span class=nx>poolSize</span> <span class=nx>that</span> <span class=nx>is</span> <span class=nx>used</span> <span class=nx>as</span> <span class=nx>a</span> <span class=nx>pool</span> <span class=k>for</span> <span class=nx>the</span> <span class=nx>fast</span> <span class=nx>allocation</span> <span class=k>of</span> <span class=k>new</span> <span class=nx>Buffer</span> <span class=nx>instances</span> <span class=nx>created</span> <span class=nx>using</span> <span class=nx>Buffer</span><span class=p>.</span><span class=nx>allocUnsafe</span><span class=p>(),</span> <span class=nx>Buffer</span><span class=p>.</span><span class=nx>from</span><span class=p>(</span><span class=nx>array</span><span class=p>),</span> <span class=nx>Buffer</span><span class=p>.</span><span class=nx>concat</span><span class=p>(),</span> <span class=nx>and</span> <span class=nx>the</span> <span class=nx>deprecated</span> <span class=k>new</span> <span class=nx>Buffer</span><span class=p>(</span><span class=nx>size</span><span class=p>)</span> <span class=nx>constructor</span> <span class=nx>only</span> <span class=nx>when</span> <span class=nx>size</span> <span class=nx>is</span> <span class=nx>less</span> <span class=nx>than</span> <span class=nx>or</span> <span class=nx>equal</span> <span class=nx>to</span> <span class=nx>Buffer</span><span class=p>.</span><span class=nx>poolSize</span> <span class=o>&gt;&gt;</span> <span class=mi>1</span> <span class=p>(</span><span class=nx>floor</span> <span class=k>of</span> <span class=nx>Buffer</span><span class=p>.</span><span class=nx>poolSize</span> <span class=nx>divided</span> <span class=nx>by</span> <span class=nx>two</span><span class=p>).</span>
+
+<span class=nx>这里介绍的是Buffer模块会预先创建一个</span> <span class=nx>Buffer</span><span class=p>.</span><span class=nx>poolSize大小</span><span class=err>（</span><span class=mi>8192</span><span class=err>）</span><span class=nx>的Buffer缓冲区</span><span class=err>，</span>
+<span class=nx>并且只会在</span> <span class=nx>Buffer</span><span class=p>.</span><span class=nx>allocUnsafe</span><span class=p>(),</span> <span class=nx>Buffer</span><span class=p>.</span><span class=nx>from</span><span class=p>(</span><span class=nx>array</span><span class=p>),</span>
+ <span class=nx>Buffer</span><span class=p>.</span><span class=nx>concat</span><span class=p>(),</span> <span class=nx>和废弃的</span> <span class=k>new</span> <span class=nx>Buffer</span><span class=p>(</span><span class=nx>size</span><span class=p>)</span> <span class=nx>这几个方法初始化的时候</span><span class=err>，</span>
+ <span class=nx>当它们传入的size</span> <span class=nx>小于等于</span>  <span class=nx>Buffer</span><span class=p>.</span><span class=nx>poolSize的</span> <span class=mi>1</span><span class=o>/</span><span class=mi>2</span><span class=nx>的时候</span><span class=err>。</span><span class=nx>才会利用到这个预创建Buffer缓冲区</span><span class=err>。</span>
+<span class=o>----------------------------------------------------------------------------------------------------------</span>
+<span class=nx>nodeJS</span> <span class=nx>源码如下</span><span class=err>：</span>
+
+<span class=cm>/**
+</span><span class=cm> * Equivalent to Buffer(num), by default creates a non-zero-filled Buffer
+</span><span class=cm> * instance. If `--zero-fill-buffers` is set, will zero-fill the buffer.
+</span><span class=cm> */</span>
+<span class=nx>Buffer</span><span class=p>.</span><span class=nx>allocUnsafe</span> <span class=o>=</span> <span class=kd>function</span> <span class=nx>allocUnsafe</span><span class=p>(</span><span class=nx>size</span><span class=p>)</span> <span class=p>{</span>
+  <span class=nx>assertSize</span><span class=p>(</span><span class=nx>size</span><span class=p>);</span>
+  <span class=k>return</span> <span class=nx>allocate</span><span class=p>(</span><span class=nx>size</span><span class=p>);</span>
+<span class=p>};</span>
+
+<span class=kd>function</span> <span class=nx>allocate</span><span class=p>(</span><span class=nx>size</span><span class=p>)</span> <span class=p>{</span>
+  <span class=c1>// 如果 未指定size或者size小于等于 pool.size的一半。直接使用预先分配的Buffer，这里传入的21*128=2688 &lt;=4096
+</span><span class=c1></span>  <span class=c1>// 因此使用 预缓冲区
+</span><span class=c1></span>  <span class=k>if</span> <span class=p>(</span><span class=nx>size</span> <span class=o>&lt;=</span> <span class=mi>0</span><span class=p>)</span> <span class=p>{</span>
+    <span class=k>return</span> <span class=k>new</span> <span class=nx>FastBuffer</span><span class=p>();</span>
+  <span class=p>}</span>
+  <span class=k>if</span> <span class=p>(</span><span class=nx>size</span> <span class=o>&lt;</span> <span class=p>(</span><span class=nx>Buffer</span><span class=p>.</span><span class=nx>poolSize</span> <span class=o>&gt;&gt;&gt;</span> <span class=mi>1</span><span class=p>))</span> <span class=p>{</span>
+    <span class=k>if</span> <span class=p>(</span><span class=nx>size</span> <span class=o>&gt;</span> <span class=p>(</span><span class=nx>poolSize</span> <span class=o>-</span> <span class=nx>poolOffset</span><span class=p>))</span>
+      <span class=nx>createPool</span><span class=p>();</span>
+    <span class=kr>const</span> <span class=nx>b</span> <span class=o>=</span> <span class=k>new</span> <span class=nx>FastBuffer</span><span class=p>(</span><span class=nx>allocPool</span><span class=p>,</span> <span class=nx>poolOffset</span><span class=p>,</span> <span class=nx>size</span><span class=p>);</span>
+    <span class=nx>poolOffset</span> <span class=o>+=</span> <span class=nx>size</span><span class=p>;</span>
+    <span class=nx>alignPool</span><span class=p>();</span>
+    <span class=k>return</span> <span class=nx>b</span><span class=p>;</span>
+  <span class=p>}</span>
+  <span class=k>return</span> <span class=nx>createUnsafeBuffer</span><span class=p>(</span><span class=nx>size</span><span class=p>);</span>
+<span class=p>}</span>
+
+</code></pre></td></tr></table></div></div></div><p>在生成Buffer缓冲区之后，使用crypto模块对空缓冲区进行了填充。之后来到方法的最后一部分。遍历生成字符。这里使用的63是有意义的。因为通过IDE的跳转，我们可以看到&mdash;-urlAlphabet是一个长度为64的字符串。这里作者通过使用缓冲区中填充的随机数字, 将其与63进行按位与，生成0-63内的随机数字，作为一个随机字符，最终遍历结束得到一个size长度的随机字符串。</p><div class=highlight><div class=chroma><div class=table-container><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-js data-lang=js><span class=kr>import</span> <span class=p>{</span> <span class=nx>nanoid</span> <span class=p>}</span> <span class=nx>from</span> <span class=s1>&#39;nanoid&#39;</span>
+<span class=nx>model</span><span class=p>.</span><span class=nx>id</span> <span class=o>=</span> <span class=nx>nanoid</span><span class=p>()</span> <span class=o>/</span>
+<span class=c1>//=&gt; &#34;Uakgb_J5m9g-0JDMbcJqL&#34;
+</span></code></pre></td></tr></table></div></div></div></div><ul class=post-copyright><li class="copyright-item author"><span class=copyright-item-text>Author</span>: <a href=https://github.com/HaleNing class="p-author h-card" target=_blank rel=noopener>underwood</a></li><li class="copyright-item link"><span class=copyright-item-text>Link</span>: <a href=/posts/nanoid%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BBi/ target=_blank rel=noopener>https://example.com/posts/nanoid源码解读i/</a></li><li class="copyright-item license"><span class=copyright-item-text>License</span>: <a href=https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en target=_blank rel=noopener>CC BY-NC-SA 4.0</a></li></ul></article><div class=updated-badge-container><span title="Updated @ 2022-03-27 14:16:29 UTC" style=cursor:help><svg xmlns="http://www.w3.org/2000/svg" width="130" height="20" class="updated-badge"><linearGradient id="b" x2="0" y2="100%"><stop offset="0" stop-color="#bbb" stop-opacity=".1"/><stop offset="1" stop-opacity=".1"/></linearGradient><clipPath id="a"><rect width="130" height="20" rx="3" fill="#fff"/></clipPath><g clip-path="url(#a)"><path class="updated-badge-left" d="M0 0h55v20H0z"/><path class="updated-badge-right" d="M55 0h75v20H55z"/><path fill="url(#b)" d="M0 0h130v20H0z"/></g><g fill="#fff" text-anchor="middle" font-size="110"><text x="285" y="150" fill="#010101" fill-opacity=".3" textLength="450" transform="scale(.1)">updated</text><text x="285" y="140" textLength="450" transform="scale(.1)">updated</text><text x="915" y="150" fill="#010101" fill-opacity=".3" textLength="650" transform="scale(.1)">2022-03-27</text><text x="915" y="140" textLength="650" transform="scale(.1)">2022-03-27</text></g></svg></span></div><ul class=post-nav><li class=post-nav-next><a href=/posts/2021%E5%B9%B4%E5%BA%A6%E6%80%BB%E7%BB%93/ rel=next>2021年度总结 ></a></li></ul></div></main><div id=back-to-top class=back-to-top><a href=#><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="icon arrow-up"><path d="M34.9 289.5l-22.2-22.2c-9.4-9.4-9.4-24.6.0-33.9L207 39c9.4-9.4 24.6-9.4 33.9.0l194.3 194.3c9.4 9.4 9.4 24.6.0 33.9L413 289.4c-9.5 9.5-25 9.3-34.3-.4L264 168.6V456c0 13.3-10.7 24-24 24h-32c-13.3.0-24-10.7-24-24V168.6L69.2 289.1c-9.3 9.8-24.8 10-34.3.4z"/></svg></a></div><footer id=footer class=footer><div class=footer-inner><div class=site-info>©&nbsp;1969–2022&nbsp;<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon footer-icon"><path d="M462.3 62.6C407.5 15.9 326 24.3 275.7 76.2L256 96.5l-19.7-20.3C186.1 24.3 104.5 15.9 49.7 62.6c-62.8 53.6-66.1 149.8-9.9 207.9l193.5 199.8c12.5 12.9 32.8 12.9 45.3.0l193.5-199.8c56.3-58.1 53-154.3-9.8-207.9z"/></svg>&nbsp;underwood</div><div class=powered-by>Powered by <a href=https://github.com/gohugoio/hugo target=_blank rel=noopener>Hugo</a> | Theme is <a href=https://github.com/reuixiy/hugo-theme-meme target=_blank rel=noopener>MemE</a></div><div class=site-copyright><a href=https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en target=_blank rel=noopener>CC BY-NC-SA 4.0</a></div><div class=custom-footer>鲁ICP备20008868号</div></div></footer></div><script src=https://cdn.jsdelivr.net/npm/medium-zoom@latest/dist/medium-zoom.min.js></script>
+<script>let imgNodes=document.querySelectorAll('div.post-body img');imgNodes=Array.from(imgNodes).filter(a=>a.parentNode.tagName!=="A"),mediumZoom(imgNodes,{background:'hsla(var(--color-bg-h), var(--color-bg-s), var(--color-bg-l), 0.95)'})</script><script src=https://cdn.jsdelivr.net/npm/instant.page@5.1.0/instantpage.min.js type=module defer></script></body></html>

@@ -1,4 +1,227 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en"><title type="text">下木coding~</title><subtitle type="html">MemE is a powerful and highly customizable GoHugo theme for personal blogs.</subtitle><updated>2022-02-09T14:48:36+00:00</updated><id>https://example.com/</id><link rel="alternate" type="text/html" href="https://example.com/"/><link rel="self" type="application/atom+xml" href="https://example.com/atom.xml"/><author><name>underwood</name><uri>https://example.com/</uri><email>xining_l_se@163.com</email></author><rights>[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en)</rights><generator uri="https://gohugo.io/" version="0.91.2">Hugo</generator><entry><title type="text">2021年度总结</title><link rel="alternate" type="text/html" href="https://example.com/posts/2021%E5%B9%B4%E5%BA%A6%E6%80%BB%E7%BB%93/"/><id>https://example.com/posts/2021%E5%B9%B4%E5%BA%A6%E6%80%BB%E7%BB%93/</id><updated>2022-02-09T14:48:32+00:00</updated><published>2022-01-01T08:48:10+08:00</published><author><name>underwood</name><uri>https://github.com/HaleNing</uri><email>xining_l_se@163.com</email></author><rights>[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en)</rights><summary type="html">序言 回首2021,对我来说,这既是充满希望的一年,也是失落慢慢的一年.下面就对我这2021一年的生活做一个总结,同时展望2022.
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en"><title type="text">下木coding~</title><subtitle type="html">MemE is a powerful and highly customizable GoHugo theme for personal blogs.</subtitle><updated>2022-03-27T14:16:32+00:00</updated><id>https://example.com/</id><link rel="alternate" type="text/html" href="https://example.com/"/><link rel="self" type="application/atom+xml" href="https://example.com/atom.xml"/><author><name>underwood</name><uri>https://example.com/</uri><email>xining_l_se@163.com</email></author><rights>[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en)</rights><generator uri="https://gohugo.io/" version="0.91.2">Hugo</generator><entry><title type="text">nanoid源码解读I</title><link rel="alternate" type="text/html" href="https://example.com/posts/nanoid%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BBi/"/><id>https://example.com/posts/nanoid%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BBi/</id><updated>2022-03-27T14:16:29+00:00</updated><published>2022-02-09T22:45:39+08:00</published><author><name>underwood</name><uri>https://github.com/HaleNing</uri><email>xining_l_se@163.com</email></author><rights>[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en)</rights><summary type="html">nanoId是什么？ 官方描述：一个小巧、安全、URL友好、唯一的 JavaScript 字符串ID生成器。一般我拿来用于生成唯一id，官方也贴心的提供了一个计算碰撞率的网站，有兴趣可以去看看：地址
+抛砖引玉 nanoId现在已经被移植到了20种语言中，这个系列文章将会就作者的JS实现，和Java实现为主要切入点。本篇是解读nano源码的第一篇文章。首先先简单热热身，先看一下项目中的demo是怎么实现的。
+小试牛刀 1 2 import { nanoid } from &amp;#39;nanoid&amp;#39; model.id = nanoid() //=&amp;gt; &amp;#34;V1StGXR8_Z5jdHi6B-myT&amp;#34; 我们能够看到，这个函数是从nanoid 中引用的。通过vscode的跳转帮助，我们能够看到文件如下所示：
+这个方法接受一个number类型的参数，作为size，返回字符串。
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 /** * Generate secure URL-friendly unique ID.</summary><content type="html">&lt;h2 id="nanoid是什么">nanoId是什么？&lt;/h2>
+&lt;blockquote>
+&lt;p>官方描述：一个小巧、安全、URL友好、唯一的 JavaScript 字符串ID生成器。一般我拿来用于生成唯一id，官方也贴心的提供了一个计算碰撞率的网站，有兴趣可以去看看：&lt;a href="https://zelark.github.io/nano-id-cc/">地址&lt;/a>&lt;/p>
+&lt;/blockquote>
+&lt;h3 id="抛砖引玉">抛砖引玉&lt;/h3>
+&lt;p>nanoId现在已经被移植到了20种语言中，这个系列文章将会就作者的JS实现，和Java实现为主要切入点。本篇是解读nano源码的第一篇文章。首先先简单热热身，先看一下项目中的demo是怎么实现的。&lt;/p>
+&lt;h3 id="小试牛刀">小试牛刀&lt;/h3>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-javascript" data-lang="javascript">&lt;span class="kr">import&lt;/span> &lt;span class="p">{&lt;/span> &lt;span class="nx">nanoid&lt;/span> &lt;span class="p">}&lt;/span> &lt;span class="nx">from&lt;/span> &lt;span class="s1">&amp;#39;nanoid&amp;#39;&lt;/span>
+&lt;span class="nx">model&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">id&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="nx">nanoid&lt;/span>&lt;span class="p">()&lt;/span> &lt;span class="c1">//=&amp;gt; &amp;#34;V1StGXR8_Z5jdHi6B-myT&amp;#34;
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>我们能够看到，这个函数是从&lt;code>nanoid&lt;/code> 中引用的。通过vscode的跳转帮助，我们能够看到文件如下所示：&lt;/p>
+&lt;p>这个方法接受一个number类型的参数，作为size，返回字符串。&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;span class="lnt">14
+&lt;/span>&lt;span class="lnt">15
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-typescript" data-lang="typescript">&lt;span class="cm">/**
+&lt;/span>&lt;span class="cm"> * Generate secure URL-friendly unique ID.
+&lt;/span>&lt;span class="cm"> *
+&lt;/span>&lt;span class="cm"> * By default, the ID will have 21 symbols to have a collision probability
+&lt;/span>&lt;span class="cm"> * similar to UUID v4.
+&lt;/span>&lt;span class="cm"> *
+&lt;/span>&lt;span class="cm"> * ```js
+&lt;/span>&lt;span class="cm"> * import { nanoid } from &amp;#39;nanoid&amp;#39;
+&lt;/span>&lt;span class="cm"> * model.id = nanoid() //=&amp;gt; &amp;#34;Uakgb_J5m9g-0JDMbcJqL&amp;#34;
+&lt;/span>&lt;span class="cm"> * ```
+&lt;/span>&lt;span class="cm"> *
+&lt;/span>&lt;span class="cm"> * @param size Size of the ID. The default size is 21.
+&lt;/span>&lt;span class="cm"> * @returns A random string.
+&lt;/span>&lt;span class="cm"> */&lt;/span>
+&lt;span class="kr">export&lt;/span> &lt;span class="kd">function&lt;/span> &lt;span class="nx">nanoid&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">size?&lt;/span>: &lt;span class="kt">number&lt;/span>&lt;span class="p">)&lt;/span>&lt;span class="o">:&lt;/span> &lt;span class="kt">string&lt;/span>
+&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>&lt;code>-=&lt;/code> convert &lt;code>size&lt;/code> to number
+这时让我们去源码看一看作者的实现吧。这个方法位于nanoid项目根目录下的&lt;code>index.js&lt;/code>文件里的&lt;code>nanoid&lt;/code> 方法。&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;span class="lnt">14
+&lt;/span>&lt;span class="lnt">15
+&lt;/span>&lt;span class="lnt">16
+&lt;/span>&lt;span class="lnt">17
+&lt;/span>&lt;span class="lnt">18
+&lt;/span>&lt;span class="lnt">19
+&lt;/span>&lt;span class="lnt">20
+&lt;/span>&lt;span class="lnt">21
+&lt;/span>&lt;span class="lnt">22
+&lt;/span>&lt;span class="lnt">23
+&lt;/span>&lt;span class="lnt">24
+&lt;/span>&lt;span class="lnt">25
+&lt;/span>&lt;span class="lnt">26
+&lt;/span>&lt;span class="lnt">27
+&lt;/span>&lt;span class="lnt">28
+&lt;/span>&lt;span class="lnt">29
+&lt;/span>&lt;span class="lnt">30
+&lt;/span>&lt;span class="lnt">31
+&lt;/span>&lt;span class="lnt">32
+&lt;/span>&lt;span class="lnt">33
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-javascript" data-lang="javascript">&lt;span class="kr">const&lt;/span> &lt;span class="nx">POOL_SIZE_MULTIPLIER&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="mi">128&lt;/span>
+&lt;span class="kd">let&lt;/span> &lt;span class="nx">pool&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">poolOffset&lt;/span>
+&lt;span class="kd">let&lt;/span> &lt;span class="nx">nanoid&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="nx">size&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="mi">21&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="p">=&amp;gt;&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;span class="c1">// to prevent `valueOf` abusing
+&lt;/span>&lt;span class="c1">&lt;/span> &lt;span class="nx">fillPool&lt;/span>&lt;span class="p">((&lt;/span>&lt;span class="nx">size&lt;/span> &lt;span class="o">-=&lt;/span> &lt;span class="mi">0&lt;/span>&lt;span class="p">))&lt;/span>
+&lt;span class="kd">let&lt;/span> &lt;span class="nx">id&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s1">&amp;#39;&amp;#39;&lt;/span>
+&lt;span class="c1">// We are reading directly from the random pool to avoid creating new array
+&lt;/span>&lt;span class="c1">&lt;/span> &lt;span class="k">for&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="kd">let&lt;/span> &lt;span class="nx">i&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="nx">poolOffset&lt;/span> &lt;span class="o">-&lt;/span> &lt;span class="nx">size&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="nx">i&lt;/span> &lt;span class="o">&amp;lt;&lt;/span> &lt;span class="nx">poolOffset&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="nx">i&lt;/span>&lt;span class="o">++&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;span class="c1">// It is incorrect to use bytes exceeding the alphabet size.
+&lt;/span>&lt;span class="c1">&lt;/span> &lt;span class="c1">// The following mask reduces the random byte in the 0-255 value
+&lt;/span>&lt;span class="c1">&lt;/span> &lt;span class="c1">// range to the 0-63 value range. Therefore, adding hacks, such
+&lt;/span>&lt;span class="c1">&lt;/span> &lt;span class="c1">// as empty string fallback or magic numbers, is unneccessary because
+&lt;/span>&lt;span class="c1">&lt;/span> &lt;span class="c1">// the bitmask trims bytes down to the alphabet size.
+&lt;/span>&lt;span class="c1">&lt;/span> &lt;span class="nx">id&lt;/span> &lt;span class="o">+=&lt;/span> &lt;span class="nx">urlAlphabet&lt;/span>&lt;span class="p">[&lt;/span>&lt;span class="nx">pool&lt;/span>&lt;span class="p">[&lt;/span>&lt;span class="nx">i&lt;/span>&lt;span class="p">]&lt;/span> &lt;span class="o">&amp;amp;&lt;/span> &lt;span class="mi">63&lt;/span>&lt;span class="p">]&lt;/span>
+&lt;span class="p">}&lt;/span>
+&lt;span class="k">return&lt;/span> &lt;span class="nx">id&lt;/span>
+&lt;span class="kd">let&lt;/span> &lt;span class="nx">fillPool&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="nx">bytes&lt;/span> &lt;span class="p">=&amp;gt;&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;span class="k">if&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="o">!&lt;/span>&lt;span class="nx">pool&lt;/span> &lt;span class="o">||&lt;/span> &lt;span class="nx">pool&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">length&lt;/span> &lt;span class="o">&amp;lt;&lt;/span> &lt;span class="nx">bytes&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;span class="nx">pool&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="nx">Buffer&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">allocUnsafe&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">bytes&lt;/span> &lt;span class="o">*&lt;/span> &lt;span class="nx">POOL_SIZE_MULTIPLIER&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;span class="nx">crypto&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">randomFillSync&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">pool&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;span class="nx">poolOffset&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="mi">0&lt;/span>
+&lt;span class="p">}&lt;/span> &lt;span class="k">else&lt;/span> &lt;span class="k">if&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="nx">poolOffset&lt;/span> &lt;span class="o">+&lt;/span> &lt;span class="nx">bytes&lt;/span> &lt;span class="o">&amp;gt;&lt;/span> &lt;span class="nx">pool&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">length&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;span class="nx">crypto&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">randomFillSync&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">pool&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;span class="nx">poolOffset&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="mi">0&lt;/span>
+&lt;span class="p">}&lt;/span>
+&lt;span class="nx">poolOffset&lt;/span> &lt;span class="o">+=&lt;/span> &lt;span class="nx">bytes&lt;/span>
+&lt;span class="p">}&lt;/span>
+&lt;span class="p">}&lt;/span>
+&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;blockquote>
+&lt;p>这个方法关联的行数很少，但是作者也别有用心。&lt;/p>
+&lt;/blockquote>
+&lt;p>首先是为了避免&lt;code>valueOf&lt;/code>的消耗，使用&lt;code>-=&lt;/code> 运算符将size变量转换成&lt;code> number&lt;/code> 类型。
+之后来到了&lt;code>fillPool&lt;/code>方法，这里作者进行了判断。&lt;/p>
+&lt;p>如果全局变量&lt;code>pool&lt;/code> 不存在，或者，已存在的 池子大小比我们传入的&lt;code>size&lt;/code> 小。
+那我们就重新创建一个池子。反之就使用已存在的池子，减少一次
+&lt;strong>分配Buffer变量的消耗&lt;/strong>。 如果需要创建一个池子，
+之后使用的是Buffer模块提供的&lt;code>allocUnsafe&lt;/code> 方法。 这里便利用到了&lt;code>allocUnsafe&lt;/code>的一个特性，
+预分配Buffer。原因如下：&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;span class="lnt">14
+&lt;/span>&lt;span class="lnt">15
+&lt;/span>&lt;span class="lnt">16
+&lt;/span>&lt;span class="lnt">17
+&lt;/span>&lt;span class="lnt">18
+&lt;/span>&lt;span class="lnt">19
+&lt;/span>&lt;span class="lnt">20
+&lt;/span>&lt;span class="lnt">21
+&lt;/span>&lt;span class="lnt">22
+&lt;/span>&lt;span class="lnt">23
+&lt;/span>&lt;span class="lnt">24
+&lt;/span>&lt;span class="lnt">25
+&lt;/span>&lt;span class="lnt">26
+&lt;/span>&lt;span class="lnt">27
+&lt;/span>&lt;span class="lnt">28
+&lt;/span>&lt;span class="lnt">29
+&lt;/span>&lt;span class="lnt">30
+&lt;/span>&lt;span class="lnt">31
+&lt;/span>&lt;span class="lnt">32
+&lt;/span>&lt;span class="lnt">33
+&lt;/span>&lt;span class="lnt">34
+&lt;/span>&lt;span class="lnt">35
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-javascript" data-lang="javascript">&lt;span class="nx">The&lt;/span> &lt;span class="nx">Buffer&lt;/span> &lt;span class="nx">module&lt;/span> &lt;span class="nx">pre&lt;/span>&lt;span class="o">-&lt;/span>&lt;span class="nx">allocates&lt;/span> &lt;span class="nx">an&lt;/span> &lt;span class="nx">internal&lt;/span> &lt;span class="nx">Buffer&lt;/span> &lt;span class="nx">instance&lt;/span> &lt;span class="k">of&lt;/span> &lt;span class="nx">size&lt;/span> &lt;span class="nx">Buffer&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">poolSize&lt;/span> &lt;span class="nx">that&lt;/span> &lt;span class="nx">is&lt;/span> &lt;span class="nx">used&lt;/span> &lt;span class="nx">as&lt;/span> &lt;span class="nx">a&lt;/span> &lt;span class="nx">pool&lt;/span> &lt;span class="k">for&lt;/span> &lt;span class="nx">the&lt;/span> &lt;span class="nx">fast&lt;/span> &lt;span class="nx">allocation&lt;/span> &lt;span class="k">of&lt;/span> &lt;span class="k">new&lt;/span> &lt;span class="nx">Buffer&lt;/span> &lt;span class="nx">instances&lt;/span> &lt;span class="nx">created&lt;/span> &lt;span class="nx">using&lt;/span> &lt;span class="nx">Buffer&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">allocUnsafe&lt;/span>&lt;span class="p">(),&lt;/span> &lt;span class="nx">Buffer&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">from&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">array&lt;/span>&lt;span class="p">),&lt;/span> &lt;span class="nx">Buffer&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">concat&lt;/span>&lt;span class="p">(),&lt;/span> &lt;span class="nx">and&lt;/span> &lt;span class="nx">the&lt;/span> &lt;span class="nx">deprecated&lt;/span> &lt;span class="k">new&lt;/span> &lt;span class="nx">Buffer&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">size&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="nx">constructor&lt;/span> &lt;span class="nx">only&lt;/span> &lt;span class="nx">when&lt;/span> &lt;span class="nx">size&lt;/span> &lt;span class="nx">is&lt;/span> &lt;span class="nx">less&lt;/span> &lt;span class="nx">than&lt;/span> &lt;span class="nx">or&lt;/span> &lt;span class="nx">equal&lt;/span> &lt;span class="nx">to&lt;/span> &lt;span class="nx">Buffer&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">poolSize&lt;/span> &lt;span class="o">&amp;gt;&amp;gt;&lt;/span> &lt;span class="mi">1&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="nx">floor&lt;/span> &lt;span class="k">of&lt;/span> &lt;span class="nx">Buffer&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">poolSize&lt;/span> &lt;span class="nx">divided&lt;/span> &lt;span class="nx">by&lt;/span> &lt;span class="nx">two&lt;/span>&lt;span class="p">).&lt;/span>
+&lt;span class="nx">这里介绍的是Buffer模块会预先创建一个&lt;/span> &lt;span class="nx">Buffer&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">poolSize大小&lt;/span>&lt;span class="err">（&lt;/span>&lt;span class="mi">8192&lt;/span>&lt;span class="err">）&lt;/span>&lt;span class="nx">的Buffer缓冲区&lt;/span>&lt;span class="err">，&lt;/span>
+&lt;span class="nx">并且只会在&lt;/span> &lt;span class="nx">Buffer&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">allocUnsafe&lt;/span>&lt;span class="p">(),&lt;/span> &lt;span class="nx">Buffer&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">from&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">array&lt;/span>&lt;span class="p">),&lt;/span>
+&lt;span class="nx">Buffer&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">concat&lt;/span>&lt;span class="p">(),&lt;/span> &lt;span class="nx">和废弃的&lt;/span> &lt;span class="k">new&lt;/span> &lt;span class="nx">Buffer&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">size&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="nx">这几个方法初始化的时候&lt;/span>&lt;span class="err">，&lt;/span>
+&lt;span class="nx">当它们传入的size&lt;/span> &lt;span class="nx">小于等于&lt;/span> &lt;span class="nx">Buffer&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">poolSize的&lt;/span> &lt;span class="mi">1&lt;/span>&lt;span class="o">/&lt;/span>&lt;span class="mi">2&lt;/span>&lt;span class="nx">的时候&lt;/span>&lt;span class="err">。&lt;/span>&lt;span class="nx">才会利用到这个预创建Buffer缓冲区&lt;/span>&lt;span class="err">。&lt;/span>
+&lt;span class="o">----------------------------------------------------------------------------------------------------------&lt;/span>
+&lt;span class="nx">nodeJS&lt;/span> &lt;span class="nx">源码如下&lt;/span>&lt;span class="err">：&lt;/span>
+&lt;span class="cm">/**
+&lt;/span>&lt;span class="cm"> * Equivalent to Buffer(num), by default creates a non-zero-filled Buffer
+&lt;/span>&lt;span class="cm"> * instance. If `--zero-fill-buffers` is set, will zero-fill the buffer.
+&lt;/span>&lt;span class="cm"> */&lt;/span>
+&lt;span class="nx">Buffer&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">allocUnsafe&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="kd">function&lt;/span> &lt;span class="nx">allocUnsafe&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">size&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;span class="nx">assertSize&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">size&lt;/span>&lt;span class="p">);&lt;/span>
+&lt;span class="k">return&lt;/span> &lt;span class="nx">allocate&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">size&lt;/span>&lt;span class="p">);&lt;/span>
+&lt;span class="p">};&lt;/span>
+&lt;span class="kd">function&lt;/span> &lt;span class="nx">allocate&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">size&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;span class="c1">// 如果 未指定size或者size小于等于 pool.size的一半。直接使用预先分配的Buffer，这里传入的21*128=2688 &amp;lt;=4096
+&lt;/span>&lt;span class="c1">&lt;/span> &lt;span class="c1">// 因此使用 预缓冲区
+&lt;/span>&lt;span class="c1">&lt;/span> &lt;span class="k">if&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="nx">size&lt;/span> &lt;span class="o">&amp;lt;=&lt;/span> &lt;span class="mi">0&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;span class="k">return&lt;/span> &lt;span class="k">new&lt;/span> &lt;span class="nx">FastBuffer&lt;/span>&lt;span class="p">();&lt;/span>
+&lt;span class="p">}&lt;/span>
+&lt;span class="k">if&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="nx">size&lt;/span> &lt;span class="o">&amp;lt;&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="nx">Buffer&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">poolSize&lt;/span> &lt;span class="o">&amp;gt;&amp;gt;&amp;gt;&lt;/span> &lt;span class="mi">1&lt;/span>&lt;span class="p">))&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;span class="k">if&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="nx">size&lt;/span> &lt;span class="o">&amp;gt;&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="nx">poolSize&lt;/span> &lt;span class="o">-&lt;/span> &lt;span class="nx">poolOffset&lt;/span>&lt;span class="p">))&lt;/span>
+&lt;span class="nx">createPool&lt;/span>&lt;span class="p">();&lt;/span>
+&lt;span class="kr">const&lt;/span> &lt;span class="nx">b&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="k">new&lt;/span> &lt;span class="nx">FastBuffer&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">allocPool&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">poolOffset&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">size&lt;/span>&lt;span class="p">);&lt;/span>
+&lt;span class="nx">poolOffset&lt;/span> &lt;span class="o">+=&lt;/span> &lt;span class="nx">size&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;span class="nx">alignPool&lt;/span>&lt;span class="p">();&lt;/span>
+&lt;span class="k">return&lt;/span> &lt;span class="nx">b&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;span class="p">}&lt;/span>
+&lt;span class="k">return&lt;/span> &lt;span class="nx">createUnsafeBuffer&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">size&lt;/span>&lt;span class="p">);&lt;/span>
+&lt;span class="p">}&lt;/span>
+&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>在生成Buffer缓冲区之后，使用crypto模块对空缓冲区进行了填充。之后来到方法的最后一部分。遍历生成字符。这里使用的63是有意义的。因为通过IDE的跳转，我们可以看到&amp;mdash;-urlAlphabet是一个长度为64的字符串。这里作者通过使用缓冲区中填充的随机数字, 将其与63进行按位与，生成0-63内的随机数字，作为一个随机字符，最终遍历结束得到一个size长度的随机字符串。&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-js" data-lang="js">&lt;span class="kr">import&lt;/span> &lt;span class="p">{&lt;/span> &lt;span class="nx">nanoid&lt;/span> &lt;span class="p">}&lt;/span> &lt;span class="nx">from&lt;/span> &lt;span class="s1">&amp;#39;nanoid&amp;#39;&lt;/span>
+&lt;span class="nx">model&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">id&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="nx">nanoid&lt;/span>&lt;span class="p">()&lt;/span> &lt;span class="o">/&lt;/span>
+&lt;span class="c1">//=&amp;gt; &amp;#34;Uakgb_J5m9g-0JDMbcJqL&amp;#34;
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div></content></entry><entry><title type="text">2021年度总结</title><link rel="alternate" type="text/html" href="https://example.com/posts/2021%E5%B9%B4%E5%BA%A6%E6%80%BB%E7%BB%93/"/><id>https://example.com/posts/2021%E5%B9%B4%E5%BA%A6%E6%80%BB%E7%BB%93/</id><updated>2022-03-27T14:16:29+00:00</updated><published>2022-01-01T08:48:10+08:00</published><author><name>underwood</name><uri>https://github.com/HaleNing</uri><email>xining_l_se@163.com</email></author><rights>[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en)</rights><summary type="html">序言 回首2021,对我来说,这既是充满希望的一年,也是失落慢慢的一年.下面就对我这2021一年的生活做一个总结,同时展望2022.
 回首2021 2021年特殊之处在于,在2021年,我正式踏入了社会,摆脱了学生身份,现在转转公司工作,如果你没听说过转转的话,你应该听说过阿里的闲鱼,转转和闲鱼类似,针对的市场也是二手市场.而在这一年,职场生活给我的体验是明显不同于学生时代的.
 在职场中,一个关键词就是产出,我们作为员工的产出率是不是让上级满意,很大程度上决定了你的升职加薪等等,幸运的是,我在入职转转的时候,加入一个在我现在看来十分适合我的小组,据后来听大领导说,当时校招生分配小组时,80%是考虑小组是否缺人,20%是考虑个人能力是否符合. 因此我最终加入了现在的小组,果然在工作1月后,就有小组内的一位同事离职了.
 不扯远了,那下面就总结一下2021的结果.
